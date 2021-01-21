@@ -1,65 +1,40 @@
 import React, { Component } from 'react';
 // import axios from 'axios';
-import Post from '../../components/Post/Post';
-import FullPost from '../../components/FullPost/FullPost';
-import NewPost from '../../components/NewPost/NewPost';
 import './Blog.css';
-import axios from '../../axios';
+// import axios from '../../axios';
+import Posts from './Posts/Posts';
+import { Route, NavLink, Switch } from 'react-router-dom';
+import NewPost from './NewPost/NewPost';
+import FullPost from './FullPost/FullPost';
 
 class Blog extends Component {
-    state = {
-        selectedPostId: null,
-        posts: [] ,
-        error: false
-    }
-
-    componentDidMount(){
-        axios.get("/posts")
-            .then(response => {
-                const po = response.data.slice(0,4);
-                const updatedPosts = po.map(post => {
-                    return{
-                        ...post,
-                        author: 'Kimi'
-                    }
-                })
-                this.setState({posts: updatedPosts});
-                // console.log(response.data)
-            })
-            .catch(error => {
-                this.setState({error:true});
-            })
-    }
-
-    postSelectedHandler = (id) =>{
-        this.setState({selectedPostId: id})
-    }
-
-
-    render () {
-        let posts = <p style={{textAlign:'center'}}>Something went wrong!</p>; 
-
-        if (!this.state.error){
-            posts = this.state.posts.map(post => {
-                return <Post 
-                    key = {post.id} 
-                    title = {post.title} 
-                    author = {post.author}
-                    clicked = {() => this.postSelectedHandler(post.id)}/>
-            })
-        }
-        
+    render () {        
         return (
-            <div>
-                <section className="Posts">
-                    {posts}
-                </section>
-                <section>
-                    <FullPost id={this.state.selectedPostId}/>
-                </section>
-                <section>
-                    <NewPost />
-                </section>
+            <div className="Blog">
+                <header>
+                    <nav>
+                        <ul>
+                            <li><NavLink to='/' 
+                                exact
+                                activeClassName='my-active' // for the purpose of my own css active name!
+                                activeStyle={{color:'#fa923f' , textDecoration: 'underline'}}//just like inline style
+                                >Home</NavLink></li>
+                            <li><NavLink to={{
+                                pathname: '/new-post',
+                                hash: '#submit',
+                                search: '?quick-submit=true'
+                            }}>New Post</NavLink></li>
+                        </ul>
+                    </nav>
+                </header>
+                {/* <Route path = '/' exact render = {() => <h1>hone</h1>} */}
+                <Switch>
+                    <Route path = '/' exact component={Posts} />
+                    <Route path = '/new-post' component={NewPost} />
+                    <Route path = '/:id' exact component={FullPost} />
+                </Switch>
+                
+                
             </div>
         );
     }
